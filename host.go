@@ -61,6 +61,8 @@ func (api *API) HostGet(name string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
+
 	data := map[string]interface{}{}
 	if err = json.NewDecoder(res.Body).Decode(&data); err != nil {
 		return nil, err
@@ -83,6 +85,8 @@ func (api *API) HostAddTemplate(hostid, templateid string) error {
 	if err != nil {
 		return err
 	}
+	defer res.Body.Close()
+
 	if res.StatusCode != 200 {
 		return fmt.Errorf("zabbix api return response code %v", res.StatusCode)
 	}
@@ -108,6 +112,8 @@ func (api *API) HostDeleteTemplate(hostid, templateid string) error {
 	if err != nil {
 		return err
 	}
+	defer res.Body.Close()
+
 	if res.StatusCode != 200 {
 		return fmt.Errorf("zabbix api return response code %v", res.StatusCode)
 	}

@@ -62,6 +62,8 @@ func (api *API) ItemCreate(hostid, name, ip, interval string, port int32) error 
 	if err != nil {
 		return err
 	}
+	defer res.Body.Close()
+
 	if res.StatusCode != 200 {
 		return fmt.Errorf("zabbix api return response code %v", res.StatusCode)
 	}

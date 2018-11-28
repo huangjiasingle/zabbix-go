@@ -25,11 +25,12 @@ func NewAPI(url, user, password string, id int) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
+
 	result := map[string]interface{}{}
 	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
 
 	if errmsg, ok := result["error"]; ok {
 		return nil, fmt.Errorf("%v", errmsg)

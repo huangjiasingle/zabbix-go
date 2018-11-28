@@ -68,6 +68,8 @@ GET:
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
+
 	data := map[string]interface{}{}
 	if err = json.NewDecoder(res.Body).Decode(&data); err != nil {
 		return nil, err
@@ -77,13 +79,20 @@ GET:
 		if err != nil {
 			return nil, err
 		}
-		err = api.TemplateCreate(result["groupid"].(string), name)
-		if err != nil {
-			return nil, err
+		if result != nil && result["groupid"] != nil {
+			err = api.TemplateCreate(result["groupid"].(string), name)
+			if err != nil {
+				return nil, err
+			}
+			goto GET
+		} else {
+			err = api.HostGroupCreate("Pass Middle Ware")
+			if err != nil {
+				return nil, err
+			}
+			goto GET
 		}
-		goto GET
 	}
-	defer res.Body.Close()
 
 	if len(data["result"].([]interface{})) != 0 {
 		return data["result"].([]interface{})[0].(map[string]interface{}), nil
