@@ -44,9 +44,9 @@ var (
 			"status": "0",
 			"esc_period": "%v",  
 			"def_shortdata": "Problem: {EVENT.NAME}",
-			"def_longdata": "Problem started at {EVENT.TIME} on {EVENT.DATE}\r\nProblem name: {EVENT.NAME}\r\nHost: {HOST.NAME}\r\nSeverity: {EVENT.SEVERITY}\r\n\r\nOriginal problem ID: {EVENT.ID}\r\n{TRIGGER.URL}",
+			"def_longdata": "Problem:#{EVENT.DATE} {EVENT.TIME}#{EVENT.NAME}#{EVENT.ID}#{ITEM.VALUE}#{ITEM.NAME}",
 			"r_shortdata": "Resolved: {EVENT.NAME}",
-			"r_longdata": "Problem has been resolved at {EVENT.RECOVERY.TIME} on {EVENT.RECOVERY.DATE}\r\nProblem name: {EVENT.NAME}\r\nHost: {HOST.NAME}\r\nSeverity: {EVENT.SEVERITY}\r\n\r\nOriginal problem ID: {EVENT.ID}\r\n{TRIGGER.URL}",
+			"r_longdata": "Resolved:#{EVENT.RECOVERY.DATE} {EVENT.RECOVERY.TIME}#{EVENT.NAME}#{EVENT.ID}#{ITEM.VALUE}#{ITEM.NAME}",
 			"pause_suppressed": "1",
 			"ack_shortdata": "Updated problem: {EVENT.NAME}",
 			"ack_longdata": "{USER.FULLNAME} {EVENT.UPDATE.ACTION} problem at {EVENT.UPDATE.DATE} {EVENT.UPDATE.TIME}.\r\n{EVENT.UPDATE.MESSAGE}\r\n\r\nCurrent problem status is {EVENT.STATUS}, acknowledged: {EVENT.ACK.STATUS}.",
@@ -64,12 +64,17 @@ var (
 				"esc_step_from": "1",
 				"esc_step_to": "1",
 				"evaltype": "0",
-				"opconditions": [],
+				"opconditions": [
+					{
+						"conditiontype":14,
+						"value":0
+					}
+				],
 				"opmessage": {
 					"default_msg": "1",
 					"subject": "Problem: {EVENT.NAME}",
-					"message": "Problem started at {EVENT.TIME} on {EVENT.DATE}\r\nProblem name: {EVENT.NAME}\r\nHost: {HOST.NAME}\r\nSeverity: {EVENT.SEVERITY}\r\n\r\nOriginal problem ID: {EVENT.ID}\r\n{TRIGGER.URL}",
-					"mediatypeid": "0"
+					"message": "{EVENT.DATE} {EVENT.TIME}#{EVENT.NAME}#{EVENT.ID}#{ITEM.VALUE}#{ITEM.NAME}",
+					"mediatypeid": "%v"
 				},
 				"opmessage_grp": [],
 				"opmessage_usr": [
@@ -84,8 +89,8 @@ var (
 					"operationid": "14",
 					"default_msg": "1",
 					"subject": "Resolved: {EVENT.NAME}",
-					"message": "Problem has been resolved at {EVENT.RECOVERY.TIME} on {EVENT.RECOVERY.DATE}\r\nProblem name: {EVENT.NAME}\r\nHost: {HOST.NAME}\r\nSeverity: {EVENT.SEVERITY}\r\n\r\nOriginal problem ID: {EVENT.ID}\r\n{TRIGGER.URL}",
-					"mediatypeid": "0"
+					"message": "{EVENT.RECOVERY.DATE} {EVENT.RECOVERY.TIME}#{EVENT.NAME}#{EVENT.ID}#{ITEM.VALUE}#{ITEM.NAME}",
+					"mediatypeid": "%v"
 				},
 				"opmessage_grp": [],
 				"opmessage_usr": [
@@ -98,7 +103,7 @@ var (
 	}`
 )
 
-func (api *API) ActionCreate(name, interval, to string) error {
+func (api *API) ActionCreate(name, interval, to, mediatypeid string) error {
 	users := ""
 	ids := strings.Split(to, ",")
 	fmt.Println(ids)
@@ -110,9 +115,9 @@ func (api *API) ActionCreate(name, interval, to string) error {
 		}
 	}
 
-	fmt.Println(fmt.Sprintf(actionPostTemplate, name, interval, name, users, users, api.Session, api.ID))
+	fmt.Println(fmt.Sprintf(actionPostTemplate, name, interval, name, mediatypeid, users, mediatypeid, users, api.Session, api.ID))
 
-	payload := strings.NewReader(fmt.Sprintf(actionPostTemplate, name, interval, name, users, users, api.Session, api.ID))
+	payload := strings.NewReader(fmt.Sprintf(actionPostTemplate, name, interval, name, mediatypeid, users, mediatypeid, users, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
 		return err
