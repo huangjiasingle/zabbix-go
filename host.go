@@ -74,7 +74,7 @@ func (api *API) HostGet(name string) (map[string]interface{}, error) {
 }
 
 func (api *API) HostAddTemplate(hostid, templateid string) error {
-	fmt.Println(fmt.Sprintf(hostAddTemplateTemplate, hostid, templateid, api.Session, api.ID))
+	// fmt.Println(fmt.Sprintf(hostAddTemplateTemplate, hostid, templateid, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(hostAddTemplateTemplate, hostid, templateid, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
@@ -101,7 +101,7 @@ func (api *API) HostAddTemplate(hostid, templateid string) error {
 }
 
 func (api *API) HostDeleteTemplate(hostid, templateid string) error {
-	fmt.Println(fmt.Sprintf(hostDeleteTemplateTemplate, hostid, templateid, api.Session, api.ID))
+	// fmt.Println(fmt.Sprintf(hostDeleteTemplateTemplate, hostid, templateid, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(hostDeleteTemplateTemplate, hostid, templateid, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {

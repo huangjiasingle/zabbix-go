@@ -8,7 +8,7 @@ import (
 )
 
 func (api *API) HostGroupGet(name string) (map[string]interface{}, error) {
-	fmt.Println(fmt.Sprintf(HostGroupGetTemplate, name, api.Session, api.ID))
+	// fmt.Println(fmt.Sprintf(HostGroupGetTemplate, name, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(HostGroupGetTemplate, name, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {

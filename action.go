@@ -60,9 +60,9 @@ var (
 			},
 			"operations": [{
 				"operationtype": "0",
-				"esc_period": "0",
+				"esc_period": "%v",
 				"esc_step_from": "1",
-				"esc_step_to": "1",
+				"esc_step_to": "%v",
 				"evaltype": "0",
 				"opconditions": [
 					{
@@ -103,10 +103,9 @@ var (
 	}`
 )
 
-func (api *API) ActionCreate(name, interval, to, mediatypeid string) error {
+func (api *API) ActionCreate(name, interval, to, mediatypeid, StepDuration string, alertNum int32) error {
 	users := ""
 	ids := strings.Split(to, ",")
-	fmt.Println(ids)
 	for index, id := range ids {
 		if index == 0 {
 			users += fmt.Sprintf(`{"operationid":"14","userid":"%v"}`, id)
@@ -115,9 +114,9 @@ func (api *API) ActionCreate(name, interval, to, mediatypeid string) error {
 		}
 	}
 
-	fmt.Println(fmt.Sprintf(actionPostTemplate, name, interval, name, mediatypeid, users, mediatypeid, users, api.Session, api.ID))
+	// fmt.Println(fmt.Sprintf(actionPostTemplate, name, interval, name, StepDuration, alertNum, mediatypeid, users, mediatypeid, users, api.Session, api.ID))
 
-	payload := strings.NewReader(fmt.Sprintf(actionPostTemplate, name, interval, name, mediatypeid, users, mediatypeid, users, api.Session, api.ID))
+	payload := strings.NewReader(fmt.Sprintf(actionPostTemplate, name, interval, name, StepDuration, alertNum, mediatypeid, users, mediatypeid, users, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
 		return err
@@ -147,7 +146,7 @@ func (api *API) ActionDelete(ids []string) error {
 	for _, id := range ids {
 		names += fmt.Sprintf(`"%v"`, id)
 	}
-	fmt.Print(fmt.Sprintf(actionDeleteTemplate, names, api.Session, api.ID))
+	// fmt.Print(fmt.Sprintf(actionDeleteTemplate, names, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(actionDeleteTemplate, names, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
@@ -171,7 +170,7 @@ func (api *API) ActionDelete(ids []string) error {
 }
 
 func (api *API) ActionGet(name string) (map[string]interface{}, error) {
-	fmt.Println(fmt.Sprintf(actionGetTemplate, name, api.Session, api.ID))
+	// fmt.Println(fmt.Sprintf(actionGetTemplate, name, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(actionGetTemplate, name, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {

@@ -37,7 +37,7 @@ var (
 )
 
 func (api *API) UserGroupCreate(name string) error {
-	fmt.Println(fmt.Sprintf(UserGroupPostTemplate, name, api.Session, api.ID))
+	// fmt.Println(fmt.Sprintf(UserGroupPostTemplate, name, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(UserGroupPostTemplate, name, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {

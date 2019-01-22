@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type API struct {
@@ -20,7 +21,9 @@ func NewAPI(url, user, password string, id int) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("content-type", "application/json")
+	http.DefaultClient.Timeout = time.Second * 3
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err

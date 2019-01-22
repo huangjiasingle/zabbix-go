@@ -36,23 +36,25 @@ var (
 		"jsonrpc": "2.0",
 		"method": "item.create",
 		"params": {
-				"type": "3",
+				"type": "%v",
 				"hostid": "%v",
 				"name": "%v",
-				"key_": "net.tcp.service[tcp,%v,%v]",
+				"key_": "%v",
 				"delay": "%v",
 				"history": "90d",
 				"trends": "365d",
-				"value_type": "3"
+				"value_type": "%v"
 			},
 		"auth": "%v",
 		"id": %v
 	}`
 )
 
-func (api *API) ItemCreate(hostid, name, ip, interval string, port int32) error {
-	fmt.Println(fmt.Sprintf(itemPostTemplate, hostid, name, ip, port, interval, api.Session, api.ID))
-	payload := strings.NewReader(fmt.Sprintf(itemPostTemplate, hostid, name, ip, port, interval, api.Session, api.ID))
+// net.tcp.service[tcp,%v,%v]
+
+func (api *API) ItemCreate(hostid, name, key, interval string, checkType, valueType int32) error {
+	// fmt.Println(fmt.Sprintf(itemPostTemplate, checkType, hostid, name, key, interval, valueType, api.Session, api.ID))
+	payload := strings.NewReader(fmt.Sprintf(itemPostTemplate, checkType, hostid, name, key, interval, valueType, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
 		return err
@@ -82,7 +84,7 @@ func (api *API) ItemDelete(ids []string) error {
 	for _, id := range ids {
 		name += fmt.Sprintf(`"%v"`, id)
 	}
-	fmt.Print(fmt.Sprintf(itemDeleteTemplate, name, api.Session, api.ID))
+	// fmt.Print(fmt.Sprintf(itemDeleteTemplate, name, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(itemDeleteTemplate, name, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
