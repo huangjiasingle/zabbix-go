@@ -95,6 +95,8 @@ func (api *API) ItemDelete(ids []string) error {
 	if err != nil {
 		return err
 	}
+	defer res.Body.Close()
+
 	result := map[string]interface{}{}
 	if err = json.NewDecoder(res.Body).Decode(&result); err != nil {
 		return err
@@ -116,6 +118,8 @@ func (api *API) ItemGet(name, hostid string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
+
 	data := map[string]interface{}{}
 	if err = json.NewDecoder(res.Body).Decode(&data); err != nil {
 		return nil, err

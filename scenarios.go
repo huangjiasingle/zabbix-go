@@ -66,6 +66,7 @@ func (api *API) ScenariosCreate(name, hostid, interval, url string) error {
 		return err
 	}
 	defer res.Body.Close()
+
 	if res.StatusCode != 200 {
 		return fmt.Errorf("zabbix api return response code %v", res.StatusCode)
 	}
@@ -91,6 +92,7 @@ func (api *API) ScenariosDelete(id string) error {
 		return err
 	}
 	defer res.Body.Close()
+
 	if res.StatusCode != 200 {
 		return fmt.Errorf("zabbix api return response code %v", res.StatusCode)
 	}
@@ -116,6 +118,7 @@ func (api *API) ScenariosGet(name, hostid string) (map[string]interface{}, error
 		return nil, err
 	}
 	defer res.Body.Close()
+
 	if res.StatusCode != 200 {
 		return nil, fmt.Errorf("zabbix api return response code %v", res.StatusCode)
 	}

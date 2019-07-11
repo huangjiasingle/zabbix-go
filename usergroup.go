@@ -75,6 +75,8 @@ GET:
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
+
 	data := map[string]interface{}{}
 	if err = json.NewDecoder(res.Body).Decode(&data); err != nil {
 		return nil, err

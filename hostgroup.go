@@ -19,11 +19,12 @@ func (api *API) HostGroupGet(name string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
+
 	result := map[string]interface{}{}
 	if err = json.NewDecoder(res.Body).Decode(&result); err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
 	if len(result["result"].([]interface{})) != 0 {
 		return result["result"].([]interface{})[0].(map[string]interface{}), nil
 	}
@@ -42,6 +43,7 @@ func (api *API) HostGroupCreate(name string) error {
 		return err
 	}
 	defer res.Body.Close()
+
 	if res.StatusCode != 200 {
 		return fmt.Errorf("zabbix api return response code %v", res.StatusCode)
 	}
