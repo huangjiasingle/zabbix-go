@@ -76,7 +76,7 @@ func (api *API) UserCreate(name, password, mail, groupID string) error {
 	return nil
 }
 
-func (api *API) UserGet(name string) (map[string]interface{}, error) {
+func (api *API) UserGet(name, password, mail string) (map[string]interface{}, error) {
 	// fmt.Println(fmt.Sprintf(UserGetTemplate, name, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(UserGetTemplate, name, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
@@ -84,6 +84,7 @@ func (api *API) UserGet(name string) (map[string]interface{}, error) {
 		return nil, err
 	}
 	req.Header.Add("content-type", "application/json")
+GET:
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -91,9 +92,24 @@ func (api *API) UserGet(name string) (map[string]interface{}, error) {
 	defer res.Body.Close()
 
 	data := map[string]interface{}{}
+
 	if err = json.NewDecoder(res.Body).Decode(&data); err != nil {
 		return nil, err
 	}
+	if len(data["result"].([]interface{})) == 0 {
+		result, err := api.UserGroupGet("Guests")
+		if err != nil {
+			return nil, err
+		}
+		if result != nil && result["usrgrpid"] != nil {
+			err = api.UserCreate(name, password, mail, result["usrgrpid"].(string))
+			if err != nil {
+				return nil, err
+			}
+			goto GET
+		}
+	}
+
 	if len(data["result"].([]interface{})) != 0 {
 		return data["result"].([]interface{})[0].(map[string]interface{}), nil
 	}

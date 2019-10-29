@@ -35,6 +35,47 @@ var (
 		"id": %v
 	}`
 
+	actionOperationTemplate = `{
+		"operationtype": "0",
+		"esc_period": "%v",
+		"esc_step_from": "1",
+		"esc_step_to": "%v",
+		"evaltype": "0",
+		"opconditions": [
+			{
+				"conditiontype":14,
+				"value":0
+			}
+		],
+		"opmessage": {
+			"default_msg": "1",
+			"subject": "Problem: {EVENT.NAME}",
+			"message": "{EVENT.DATE} {EVENT.TIME}#{EVENT.NAME}#{EVENT.ID}#{ITEM.VALUE}#{ITEM.NAME}",
+			"mediatypeid": "%v"
+		},
+		"opmessage_grp": [],
+		"opmessage_usr": [
+			%v
+		]
+	}`
+
+	actionRecoveryOperationsTemplate = `{
+		"operationtype": "0",
+		"evaltype": "0",
+		"opconditions": [],
+		"opmessage": {
+			"operationid": "14",
+			"default_msg": "1",
+			"subject": "Resolved: {EVENT.NAME}",
+			"message": "{EVENT.RECOVERY.DATE} {EVENT.RECOVERY.TIME}#{EVENT.NAME}#{EVENT.ID}#{ITEM.VALUE}#{ITEM.NAME}",
+			"mediatypeid": "%v"
+		},
+		"opmessage_grp": [],
+		"opmessage_usr": [
+			%v
+		]
+	}`
+
 	actionPostTemplate = `{
 		"jsonrpc": "2.0",
 		"method": "action.create",
@@ -58,65 +99,33 @@ var (
 					"value": "%v"
 				}]
 			},
-			"operations": [{
-				"operationtype": "0",
-				"esc_period": "%v",
-				"esc_step_from": "1",
-				"esc_step_to": "%v",
-				"evaltype": "0",
-				"opconditions": [
-					{
-						"conditiontype":14,
-						"value":0
-					}
-				],
-				"opmessage": {
-					"default_msg": "1",
-					"subject": "Problem: {EVENT.NAME}",
-					"message": "{EVENT.DATE} {EVENT.TIME}#{EVENT.NAME}#{EVENT.ID}#{ITEM.VALUE}#{ITEM.NAME}",
-					"mediatypeid": "%v"
-				},
-				"opmessage_grp": [],
-				"opmessage_usr": [
-					%v
-				]
-			}],
-			"recovery_operations": [{
-				"operationtype": "0",
-				"evaltype": "0",
-				"opconditions": [],
-				"opmessage": {
-					"operationid": "14",
-					"default_msg": "1",
-					"subject": "Resolved: {EVENT.NAME}",
-					"message": "{EVENT.RECOVERY.DATE} {EVENT.RECOVERY.TIME}#{EVENT.NAME}#{EVENT.ID}#{ITEM.VALUE}#{ITEM.NAME}",
-					"mediatypeid": "%v"
-				},
-				"opmessage_grp": [],
-				"opmessage_usr": [
-					%v
-				]
-			}]
+			"operations": [%v],
+			"recovery_operations": [%v]
 		},
 		"auth": "%v",
 		"id": %v
 	}`
 )
 
-func (api *API) ActionCreate(name, interval, to, mediatypeid, StepDuration string, alertNum int32) error {
-	users := ""
-	ids := strings.Split(to, ",")
-	for index, id := range ids {
-		if index == 0 {
-			users += fmt.Sprintf(`{"operationid":"14","userid":"%v"}`, id)
-		} else {
-			users += "," + fmt.Sprintf(`{"operationid":"14","userid":"%v"}`, id)
+// ActionCreate create zabbix action
+// toWX key mediatypeid of weixin  value is admin weixin user, toEmail mediatypeid of emal value of the user email
+func (api *API) ActionCreate(name, interval, StepDuration string, alertNum int32, mediatypeidUserIDS map[string]string) error {
+	operations := []string{}
+	recoveryPperations := []string{}
+	for mediatypeid, userIDS := range mediatypeidUserIDS {
+		users := ""
+		ids := strings.Split(userIDS, ",")
+		for index, id := range ids {
+			if index == 0 {
+				users += fmt.Sprintf(`{"operationid":"14","userid":"%v"}`, id)
+			} else {
+				users += "," + fmt.Sprintf(`{"operationid":"14","userid":"%v"}`, id)
+			}
 		}
+		operations = append(operations, fmt.Sprintf(actionOperationTemplate, StepDuration, alertNum, mediatypeid, users))
+		recoveryPperations = append(recoveryPperations, fmt.Sprintf(actionRecoveryOperationsTemplate, mediatypeid, users))
 	}
-
-	// fmt.Println(fmt.Sprintf(actionPostTemplate, name, interval, name, StepDuration, alertNum, mediatypeid, users, mediatypeid, users, api.Session, api.ID))
-
-	payload := strings.NewReader(fmt.Sprintf(actionPostTemplate, name, interval, name, StepDuration, alertNum, mediatypeid, users, mediatypeid, users, api.Session, api.ID))
+	payload := strings.NewReader(fmt.Sprintf(actionPostTemplate, name, interval, name, strings.Join(operations, ","), strings.Join(recoveryPperations, ","), api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
 		return err
@@ -141,12 +150,13 @@ func (api *API) ActionCreate(name, interval, to, mediatypeid, StepDuration strin
 	return nil
 }
 
+// ActionDelete delete zabbix action
 func (api *API) ActionDelete(ids []string) error {
 	names := ""
 	for _, id := range ids {
 		names += fmt.Sprintf(`"%v"`, id)
 	}
-	// fmt.Print(fmt.Sprintf(actionDeleteTemplate, names, api.Session, api.ID))
+
 	payload := strings.NewReader(fmt.Sprintf(actionDeleteTemplate, names, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
@@ -169,6 +179,7 @@ func (api *API) ActionDelete(ids []string) error {
 	return nil
 }
 
+// ActionGet get zabbix action
 func (api *API) ActionGet(name string) (map[string]interface{}, error) {
 	// fmt.Println(fmt.Sprintf(actionGetTemplate, name, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(actionGetTemplate, name, api.Session, api.ID))

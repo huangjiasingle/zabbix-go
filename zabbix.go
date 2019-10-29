@@ -23,7 +23,7 @@ func NewAPI(url, user, password string, id int) (*API, error) {
 	}
 
 	req.Header.Add("content-type", "application/json")
-	http.DefaultClient.Timeout = time.Second * 3
+	http.DefaultClient.Timeout = time.Second * 60
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
