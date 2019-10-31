@@ -53,7 +53,6 @@ var (
 // net.tcp.service[tcp,%v,%v]
 
 func (api *API) ItemCreate(hostid, name, key, interval string, checkType, valueType int32) error {
-	// fmt.Println(fmt.Sprintf(itemPostTemplate, checkType, hostid, name, key, interval, valueType, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(itemPostTemplate, checkType, hostid, name, key, interval, valueType, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
@@ -84,7 +83,6 @@ func (api *API) ItemDelete(ids []string) error {
 	for _, id := range ids {
 		name += fmt.Sprintf(`"%v"`, id)
 	}
-	// fmt.Print(fmt.Sprintf(itemDeleteTemplate, name, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(itemDeleteTemplate, name, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {

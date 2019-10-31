@@ -50,7 +50,6 @@ var (
 )
 
 func (api *API) UserCreate(name, password, mail, groupID string) error {
-	// fmt.Println(fmt.Sprintf(UserPostTemplate, name, password, groupID, mail, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(UserPostTemplate, name, password, groupID, mail, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
@@ -77,7 +76,6 @@ func (api *API) UserCreate(name, password, mail, groupID string) error {
 }
 
 func (api *API) UserGet(name, password, mail string) (map[string]interface{}, error) {
-	// fmt.Println(fmt.Sprintf(UserGetTemplate, name, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(UserGetTemplate, name, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {

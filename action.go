@@ -85,9 +85,9 @@ var (
 			"status": "0",
 			"esc_period": "%v",  
 			"def_shortdata": "Problem: {EVENT.NAME}",
-			"def_longdata": "告警触发: \r\nEventID: {EVENT.ID}\r\nStartAt: {EVENT.TIME} {EVENT.DATE}\r\n{TRIGGER.DESCRIPTION}\r\n{TRIGGER.NAME}: {ITEM.VALUE}%%",
+			"def_longdata": "告警触发: \r\nEventID: {EVENT.ID}\r\nStartAt: {EVENT.TIME} {EVENT.DATE}\r\n{TRIGGER.DESCRIPTION}\r\n{TRIGGER.NAME}: {ITEM.VALUE}",
 			"r_shortdata": "Resolved: {EVENT.NAME}",
-			"r_longdata": "告警恢复: \r\nEventID: {EVENT.ID}\r\nStartAt: {EVENT.TIME} {EVENT.DATE}\r\n{TRIGGER.DESCRIPTION}\r\n{TRIGGER.NAME}: {ITEM.VALUE}%%",
+			"r_longdata": "告警恢复: \r\nEventID: {EVENT.ID}\r\nStartAt: {EVENT.TIME} {EVENT.DATE}\r\n{TRIGGER.DESCRIPTION}\r\n{TRIGGER.NAME}: {ITEM.VALUE}",
 			"pause_suppressed": "1",
 			"ack_shortdata": "Updated problem: {EVENT.NAME}",
 			"ack_longdata": "{USER.FULLNAME} {EVENT.UPDATE.ACTION} problem at {EVENT.UPDATE.DATE} {EVENT.UPDATE.TIME}.\r\n{EVENT.UPDATE.MESSAGE}\r\n\r\nCurrent problem status is {EVENT.STATUS}, acknowledged: {EVENT.ACK.STATUS}.",
@@ -156,7 +156,6 @@ func (api *API) ActionDelete(ids []string) error {
 	for _, id := range ids {
 		names += fmt.Sprintf(`"%v"`, id)
 	}
-
 	payload := strings.NewReader(fmt.Sprintf(actionDeleteTemplate, names, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
@@ -181,7 +180,6 @@ func (api *API) ActionDelete(ids []string) error {
 
 // ActionGet get zabbix action
 func (api *API) ActionGet(name string) (map[string]interface{}, error) {
-	// fmt.Println(fmt.Sprintf(actionGetTemplate, name, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(actionGetTemplate, name, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {

@@ -23,7 +23,6 @@ var (
 )
 
 func (api *API) MediaTypeGet(name string) (map[string]interface{}, error) {
-	// fmt.Println(fmt.Sprintf(MediaTypeGetTemplate, name, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(MediaTypeGetTemplate, name, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {

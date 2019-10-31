@@ -36,7 +36,6 @@ var (
 )
 
 func (api *API) TriggerCreate(name, expression, comments string) error {
-	// fmt.Println(fmt.Sprintf(triggerPostTemplate, name, expression, comments, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(triggerPostTemplate, name, expression, comments, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
@@ -63,7 +62,6 @@ func (api *API) TriggerCreate(name, expression, comments string) error {
 }
 
 func (api *API) TriggerGet(name string) (map[string]interface{}, error) {
-	// fmt.Println(fmt.Sprintf(triggerGetTemplate, name, api.Session, api.ID))
 	payload := strings.NewReader(fmt.Sprintf(triggerGetTemplate, name, api.Session, api.ID))
 	req, err := http.NewRequest("POST", api.URL, payload)
 	if err != nil {
